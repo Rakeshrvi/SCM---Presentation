@@ -1,6 +1,8 @@
 
+
 import React, { useEffect, useRef, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, Sector, ReferenceLine } from 'recharts';
+// FIX: Add PieProps to the import to allow for type patching.
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, Sector, ReferenceLine, PieProps } from 'recharts';
 import { SlideData, SlideType, ArchitectureNode } from '../types';
 import { ApolloLogo, PowerBILogo, ArrowIcon } from './icons';
 
@@ -128,11 +130,16 @@ const AnimatedPieChart: React.FC<{ slide: SlideData }> = ({ slide }) => {
     );
   };
 
+  // FIX: The installed @types/recharts version has incorrect typings for the Pie component,
+  // missing the `activeIndex` property. This cast adds the missing property
+  // to allow the component to be used as intended by the library.
+  const PatchedPie = Pie as React.ComponentType<PieProps & { activeIndex?: number }>;
+
   return (
     <div className="w-full h-full">
       <ResponsiveContainer width="100%" height={400}>
         <PieChart>
-          <Pie
+          <PatchedPie
             activeIndex={activeIndex}
             activeShape={renderActiveShape}
             data={slide.chartData}
@@ -151,7 +158,7 @@ const AnimatedPieChart: React.FC<{ slide: SlideData }> = ({ slide }) => {
             {slide.chartData?.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} style={{transition: 'opacity 0.2s', opacity: activeIndex === index ? 1 : 0.5 }} />
             ))}
-          </Pie>
+          </PatchedPie>
           <Tooltip contentStyle={{ display: 'none' }} />
         </PieChart>
       </ResponsiveContainer>
@@ -163,7 +170,12 @@ const AnimatedPieChart: React.FC<{ slide: SlideData }> = ({ slide }) => {
 // --- Individual Slide Components ---
 
 const TitleSlide: React.FC<SlideProps> = ({ slide }) => (
-  <div className="flex flex-col items-center justify-center h-full text-center min-h-screen">
+  <div className="relative flex flex-col items-center justify-center h-full text-center min-h-screen">
+    <img 
+      src="https://github.com/Rakeshrvi/SCM-Asset/blob/main/LEAD_CHRIST-removebg-preview.png?raw=true" 
+      alt="LEAD Christ University Logo" 
+      className="absolute top-4 left-1/2 -ml-28 md:-ml-60 h-32 w-auto anim-child" 
+    />
     <div className="flex flex-col md:flex-row gap-8 mb-12 anim-child">
       <ApolloLogo />
       <PowerBILogo />
@@ -174,13 +186,6 @@ const TitleSlide: React.FC<SlideProps> = ({ slide }) => (
       <p className="text-2xl text-[#1B3C53] font-bold">{slide.presenter?.name}</p>
       <p className="text-xl text-[#1B3C53]">{slide.presenter?.institution}</p>
     </div>
-    <button
-      className="scroll-down-button absolute bottom-10 text-sm text-[#1B3C53] animate-bounce anim-child cursor-pointer flex flex-col items-center"
-      aria-label="Scroll to next section"
-    >
-      <span>Scroll Down</span>
-      <svg className="w-6 h-6 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-    </button>
   </div>
 );
 
@@ -229,7 +234,23 @@ const TableSlide: React.FC<SlideProps> = ({ slide }) => (
   <div className="flex flex-col justify-center h-full items-center">
      <h2 className="text-5xl font-extrabold mb-4 text-center anim-child text-[#1B3C53]">{slide.title}</h2>
      {slide.subtitle && <p className="text-xl text-[#1B3C53] mb-8 text-center anim-child font-semibold">{slide.subtitle}</p>}
-     {slide.mainPoints && <p className="mb-8 max-w-3xl text-center anim-child text-xl text-[#1B3C53]">{typeof slide.mainPoints[0] === 'string' ? slide.mainPoints[0] : slide.mainPoints[0].title}</p>}
+     {slide.mainPoints && (
+      <p className="mb-8 max-w-3xl text-center anim-child text-xl text-[#1B3C53]">
+        {(() => {
+          const pointText = typeof slide.mainPoints[0] === 'string' ? slide.mainPoints[0] : slide.mainPoints[0].title;
+          if (slide.id === 6 && pointText.startsWith('Key Challenge:')) {
+            const parts = pointText.split(':');
+            return (
+              <>
+                <span className="font-bold underline">{parts[0]}:</span>
+                <span>{parts.slice(1).join(':')}</span>
+              </>
+            );
+          }
+          return pointText;
+        })()}
+      </p>
+    )}
     <div className="w-full max-w-5xl border border-[#D1D5DB] rounded-lg overflow-hidden bg-white shadow-md anim-child">
         <table className="w-full text-base text-[#1B3C53]">
             <thead className="bg-[#F0F2F5] text-[#1B3C53]">
@@ -344,6 +365,22 @@ const AboutSlide: React.FC<SlideProps> = ({ slide }) => (
     </div>
 );
 
+const ThankYouSlide: React.FC<SlideProps> = ({ slide }) => (
+  <div className="flex flex-col items-center justify-center h-full text-center min-h-screen">
+    {slide.visual && (
+      <img src={slide.visual} alt="Thank You" className="rounded-lg object-contain h-64 w-auto mb-12 anim-child" />
+    )}
+    <h1 className="text-7xl md:text-8xl font-extrabold text-[#1B3C53] leading-tight anim-child">{slide.title}</h1>
+    {slide.subtitle && <p className="mt-6 text-3xl md:text-4xl text-[#1B3C53] anim-child font-semibold">{slide.subtitle}</p>}
+    {slide.presenter && (
+        <div className="mt-16 border-t-2 border-[#D1D5DB] pt-8 anim-child">
+          <p className="text-2xl text-[#1B3C53] font-bold">{slide.presenter.name}</p>
+          <p className="text-xl text-[#1B3C53]">{slide.presenter.institution}</p>
+        </div>
+    )}
+  </div>
+);
+
 const DefaultSlide: React.FC<SlideProps> = ({ slide }) => (
   <div className="grid md:grid-cols-2 gap-24 h-full items-center">
     <div className="anim-child">
@@ -385,6 +422,7 @@ const slideComponents: Record<SlideType, React.FC<SlideProps>> = {
   [SlideType.Impact]: DefaultSlide,
   [SlideType.Learnings]: DefaultSlide,
   [SlideType.Conclusion]: DefaultSlide,
+  [SlideType.ThankYou]: ThankYouSlide,
 };
 
 // --- Main Section Component ---

@@ -1,4 +1,5 @@
 
+
 export enum SlideType {
   Title = 'title',
   Intro = 'intro',
@@ -15,6 +16,7 @@ export enum SlideType {
   Impact = 'impact',
   Learnings = 'learnings',
   Conclusion = 'conclusion',
+  ThankYou = 'thankyou',
 }
 
 export interface TableRow {

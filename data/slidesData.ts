@@ -8,7 +8,7 @@ export const slidesData: SlideData[] = [
     subtitle: 'Data-Driven Transformation for Operational Excellence',
     presenter: {
       name: 'Rakesh M R & Sagar Pradeep',
-      institution: 'LEAD College of Management',
+      institution: 'LEAD College (Autonomous) Dhoni, Palakkad',
     },
     logos: ['Apollo', 'PowerBI'],
   },
@@ -66,7 +66,7 @@ export const slidesData: SlideData[] = [
   {
     id: 5,
     type: SlideType.Importance,
-    title: 'Importance of Data-Driven Decision-Making',
+    title: 'Importance of Data-Driven Decision-Making : How Significance?',
     mainPoints: [
       'Data is the foundation for SCM efficiency.',
       'Helps with Accurate demand forecasting',
@@ -101,7 +101,7 @@ export const slidesData: SlideData[] = [
   {
     id: 7,
     type: SlideType.Example,
-    title: 'Real Example: Coimbatore RDC MIS Data (Before BI)',
+    title: 'Real Example: Coimbatore RDC MIS Data (Before Intervention)',
     subtitle: 'Sample (September 2024)',
     table: {
       headers: ['Date', 'Planned Vehicles', 'Actual Vehicles', 'Adherence'],
@@ -237,5 +237,16 @@ export const slidesData: SlideData[] = [
       author: '',
     },
     visual: 'https://picsum.photos/seed/future/600/300',
+  },
+  {
+    id: 16,
+    type: SlideType.ThankYou,
+    title: 'Thank You!',
+    subtitle: 'Any Questions?',
+    presenter: {
+      name: 'Rakesh M R & Sagar Pradeep',
+      institution: 'LEAD College (Autonomous) Dhoni, Palakkad',
+    },
+    visual: 'https://github.com/Rakeshrvi/SCM-Asset/blob/main/ThankYouBW-removebg-preview.png?raw=true',
   },
 ];

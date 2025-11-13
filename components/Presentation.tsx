@@ -121,24 +121,13 @@ const Presentation: React.FC<PresentationProps> = ({ slides }) => {
         }
       };
       
-      // --- "Scroll Down" Button Handler ---
-      const handleScrollBtnClick = (e: MouseEvent) => {
-          const target = e.target as HTMLElement;
-          if(target.closest('.scroll-down-button')) {
-              e.preventDefault();
-              navigateTo(1); // Navigate to the second slide
-          }
-      };
-
       window.addEventListener('wheel', handleWheel, { passive: false });
       window.addEventListener('keydown', handleKeyDown);
-      document.addEventListener('click', handleScrollBtnClick);
 
       // Cleanup
       return () => {
         window.removeEventListener('wheel', handleWheel);
         window.removeEventListener('keydown', handleKeyDown);
-        document.removeEventListener('click', handleScrollBtnClick);
         ScrollTrigger.getAll().forEach(st => st.kill());
       };
     }, mainRef);
